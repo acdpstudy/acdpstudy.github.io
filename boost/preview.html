@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Schulung – Vorschau aller Zustände</title>
+  <style>
+    :root { --primary: #1f3a5f; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #e4e1db; color: #1b1f24; }
+    header { padding: 20px 24px 8px; }
+    h1 { margin: 0 0 6px; font-size: 1.4rem; color: var(--primary); }
+    header p { margin: 4px 0; max-width: 62rem; line-height: 1.5; }
+    .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 10px; }
+    .controls label { display: flex; gap: 8px; align-items: center; min-height: 44px; }
+    h2 { font-size: 1.15rem; margin: 30px 24px 4px; color: var(--primary); }
+    .grid { display: flex; flex-wrap: wrap; gap: 22px; padding: 0 24px 10px; }
+    figure { margin: 0; }
+    figcaption { font-size: .9rem; margin: 6px 2px 0; display: flex; justify-content: space-between; gap: 8px; width: 390px; }
+    figcaption a { color: var(--primary); }
+    iframe { width: 390px; height: 780px; border: 0; border-radius: 22px; background: #fff; box-shadow: 0 0 0 1px #c9ced4, 0 8px 24px rgba(0,0,0,.08); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Vorschau aller Zustände (boost-v7)</h1>
+    <p>Jeder Rahmen zeigt eine Seite in 390 × 780 px. Je Muster vier Zustände: A Antwort, T Was passiert (vor dem Tippen),
+       B Was passiert (die App hat reagiert), E Erklärung. Bei B und E ist eine falsche Beispielantwort eingesetzt. Nichts hier wird gespeichert.</p>
+    <div class="controls">
+      <label>Teil:
+        <select id="modus">
+          <option value="g3">Schulung + neutraler Teil (G3)</option>
+          <option value="g4">Schulung + Wenn-Dann-Plan (G4)</option>
+          <option value="g2">Passwort-Schulung (G2)</option>
+          <option value="post">Schulung freiwillig nach T2 (POST)</option>
+        </select>
+      </label>
+      <label>Apps:
+        <select id="apps">
+          <option value="ig,tt,sc">Instagram + TikTok + Snapchat</option>
+          <option value="ig">nur Instagram</option>
+          <option value="tt">nur TikTok</option>
+          <option value="sc">nur Snapchat</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="export"> Exportansicht</label>
+    </div>
+  </header>
+  <div id="out"></div>
+<script>
+(function () {
+  var out = document.getElementById("out");
+  function build() {
+    var modus = document.getElementById("modus").value;
+    var apps = document.getElementById("apps").value;
+    var exp = document.getElementById("export").checked ? "&export=1" : "";
+    var units = modus === "g2" ? [1, 2, 3, 4] : [1, 4, 3, 6];
+    var sections = [["Start", ["start"]]];
+    units.forEach(function (u, i) { sections.push([(modus === "g2" ? "Thema " : "Muster ") + (i + 1), ["A", "T", "B", "E"].map(function (s) { return "p" + u + s; })]); });
+    sections.push(["Übungen", ["W1A", "W1B", "W2A", "W2B"]]);
+    sections.push(["Einordnung und Zusammenfassung", ["einordnung", "zusammenfassung"]]);
+    out.innerHTML = "";
+    sections.forEach(function (s) {
+      var h = document.createElement("h2"); h.textContent = s[0]; out.appendChild(h);
+      var g = document.createElement("div"); g.className = "grid"; out.appendChild(g);
+      s[1].forEach(function (k) {
+        var url = "index.html?preview=" + k + "&modus=" + modus + "&apps=" + apps + exp;
+        var fig = document.createElement("figure");
+        fig.innerHTML = '<iframe loading="lazy" src="' + url + '" title="' + k + '"></iframe><figcaption><span>' + k + '</span><a href="' + url + '" target="_blank">Einzeln öffnen</a></figcaption>';
+        g.appendChild(fig);
+      });
+    });
+  }
+  ["modus", "apps", "export"].forEach(function (id) { document.getElementById(id).addEventListener("change", build); });
+  build();
+})();
+</script>
+</body>
+</html>
